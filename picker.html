@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 100vw;
+            min-height: 100vh;
+        }
+    </style>
+    <script src="/assets/iro.min.js"></script>
+</head>
+<body>
+        <div class="wrap">
+            <div class="half">
+                <div class="colorPicker"></div>
+            </div>
+        </div>
+    <script>
+        // Create a new color picker instance
+        // https://iro.js.org/guide.html#getting-started
+        var firstTime = true;
+        var colorPicker = new iro.ColorPicker(".colorPicker", {
+        // color picker options
+        // Option guide: https://iro.js.org/guide.html#color-picker-options
+            width: 280,
+            color: "rgb(255, 0, 0)",
+            borderWidth: 1,
+            borderColor: "#fff",
+        });
+
+        var values = document.getElementById("values");
+
+        // https://iro.js.org/guide.html#color-picker-events
+        colorPicker.on(["color:init", "color:change"], function(color) {
+            if (firstTime) {
+                firstTime = false;
+                return false;
+            }
+            var request = new XMLHttpRequest();
+            request.open('POST', '/rgb', true);
+            request.setRequestHeader("Content-Type", "application/json");
+
+            request.onload = function() {
+                
+            };
+
+            request.onerror = function() {
+            // There was a connection error of some sort
+            };
+
+            request.send(JSON.stringify({ color: color.rgbString }));
+        });
+    </script>
+</body>
+</html>

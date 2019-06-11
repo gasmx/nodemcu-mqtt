@@ -1,3 +1,4 @@
+const path = require('path');
 var express = require('express');
 var app = express();
 var mqtt = require('mqtt'), url = require('url');
@@ -16,28 +17,24 @@ var options = {
 // Create a client connection
 var client = mqtt.connect(url, options);
 
-client.on('connect', function() { // When connected
-  console.log('connected')
-
-  // subscribe to a topic
-//   client.subscribe('esp/test', function() {
-//     // when a message arrives, do something with it
-//     client.on('message', function(topic, message, packet) {
-//       console.log("Received '" + message + "' on '" + topic + "'");
-//     });
-//   });
-
-  // publish a message to a topic
-//   client.publish('esp/test', 'my message', function() {
-//     console.log("Message is published");
-//     client.end(); // Close the connection when published
-//   });
-});
+app.use("/assets", express.static(__dirname + '/assets'));
+app.use(express.json())
 
 app.get('/', function (req, res) {
-    res.send('Hello World!');
+    res.sendFile(__dirname + '/picker.html')
+})
 
-    client.publish('esp/test', req.query.action, function() {
+app.post('/rgb', function (req, res) {
+    res.send('nice!')
+
+    const color = req.body.color.replace('rgb(', '').replace(')', '').split(',');
+
+    const r = color[0].trim();
+    const g = color[1].trim();
+    const b = color[2].trim();
+    const params = { r, g, b }
+
+    client.publish('esp/test', JSON.stringify(params), function() {
         console.log("Message is published");
         // client.end(); // Close the connection when published
     });
